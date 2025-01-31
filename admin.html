@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administrador</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"> <!-- Font Awesome -->
+  <link rel="stylesheet" href="/public/css/admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script> 
+ 
+  
+  
+  
+  
+  
+</head>
+<body>
+  <div class="d-flex">
+    <!-- Barra Lateral -->
+    <aside class="sidebar vh-100 p-3">
+      <h3 class="text-primary fw-bold mb-4">Administrador</h3>
+      <ul class="nav flex-column">
+        <!-- Cuestionarios -->
+        <li class="nav-item mb-3">
+          <button class="btn btn-toggle w-100 text-start" data-target="#cuestionarios-options">
+            <i class="fa-solid fa-book"></i> Cuestionarios
+          </button>
+          <ul class="nav flex-column collapse" id="cuestionarios-options">
+            <li><a href="#" class="crearCuestionario nav-link ms-4">Crear Cuestionario</a></li>
+            <li><a href="#" class="listarCuestionario nav-link ms-4">Listar Cuestionarios</a></li>
+          </ul>
+        </li>
+        <!-- Usuarios -->
+        <li class="nav-item mb-3">
+          <button class="btn btn-toggle w-100 text-start" data-target="#usuarios-options">
+            <i class="fa-solid fa-user"></i> Usuarios
+          </button>
+          <ul class="nav flex-column collapse" id="usuarios-options">
+            <li><a href="#" class="CrearUsuarios nav-link ms-4">Crear usuarios</a></li>
+            <li><a href="#" class="listarUsuariosCuestionario nav-link ms-4">Detalle de Usuarios</a></li>
+            <li><a href="#" class="ListarCuestionariosUsuarios nav-link ms-4">Cuestionarios por Usuarios</a></li>
+            <!-- <li><a href="#" class="nav-link ms-4">Usuarios Aprobados</a></li> -->
+          </ul>
+        </li>
+        <!-- Reportes -->
+        <!-- <li class="nav-item mb-3">
+          <a href="#" class="nav-link">
+            <i class="fa-solid fa-chart-line"></i> Reportes
+          </a>
+        </li> -->
+      </ul>
+    </aside>
+
+    
+    <!-- Contenido Principal -->
+    <main class="content flex-grow-1 p-4" id="main-content">
+      <h2 class="mb-4">Bienvenido al Panel de Administración</h2>
+      
+    </main>
+    
+    
+  </div>
+
+  <script src="/public/js/admin.js"></script>
+</body>
+</html>
