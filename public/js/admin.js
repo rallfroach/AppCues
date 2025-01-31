@@ -224,7 +224,7 @@ function loadForm1() {
     if (!vigencia) {
       Swal.fire({
         title: "Contenido de Cuestionario",
-        text: "Este valor no puede estar vacio",
+        text: "Este valor no puede estar vacio debe ser ",
         icon: "warning",
       });
       return;
