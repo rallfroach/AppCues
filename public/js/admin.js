@@ -220,6 +220,15 @@ function loadForm1() {
       return;
     }
 
+
+    if (!vigencia) {
+      Swal.fire({
+        title: "Contenido de Cuestionario",
+        text: "Este valor no puede estar vacio",
+        icon: "warning",
+      });
+      return;
+    }
     // Guardar datos del cuestionario
     idQuizz = generarIdCuestionario();
     tiempoLimiteGlobal = parseInt(tiempoCuestionario);
