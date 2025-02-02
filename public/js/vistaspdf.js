@@ -29,7 +29,7 @@ let intentosConsumidos = null;
 
 
 function guardarTiempoRestante(IDCuestionario, tiempoRestante) {
-  // Asegurarse de que tiempoRestanteActual está actualizado
+  // Asegurarse de que tiempoRestanteActual está actualizado realizando Cambios GTI
   const usuarioId = localStorage.getItem('userId');
   tiempoRestante = tiempoRestanteActual; // Forzar uso del valor más reciente del cronómetro
   const minutosRestantes = Math.ceil(tiempoRestante / 60); // Convertir a minutos

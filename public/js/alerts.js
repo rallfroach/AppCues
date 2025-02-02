@@ -12,6 +12,20 @@ function alertaSatisfactoria(){
 
 window.alertaSatisfactoria = alertaSatisfactoria;
 
+function alertaSatisfactoria(){
+  Swal.fire({
+    position: "center",
+    icon: "success",
+    title: "Actualización Exitosa",
+    showConfirmButton: false,
+    timer: 1500,
+    width:'25rem',
+    timerProgressBar:true
+  });
+}
+
+window.alertaSatisfactoria = alertaSatisfactoria;
+
 function confirmacionEliminarUsuario(){
   Swal.fire({
     title: "Seguro desea eliminar?",
