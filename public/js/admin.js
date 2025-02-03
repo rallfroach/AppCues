@@ -104,6 +104,7 @@ function loadForm1() {
   // Cargar los departamentos desde el backend
 // Cargar los departamentos desde el backend
 // Cargar los departamentos desde el backend
+// Cargar los departamentos desde el backend
 fetch('http://localhost:3000/api/admin/departamentos')
   .then((response) => response.json())
   .then((departamentos) => {
@@ -546,7 +547,7 @@ function finalizeCuestionario() {
       body: JSON.stringify({
         idCuestionario: idQuizz,
         departamentos: Array.from(departamentosSeleccionadosID),
-        fecha_creacion: new Date().toISOString().split("T")[0], 
+        fecha_vigencia: vigencia, 
         tiempolimite: tiempoLimiteGlobal,
       })
     })
@@ -1667,4 +1668,127 @@ function renderQuizDetailsModal(results) {
 }
 
 document.querySelector('a.ListarCuestionariosUsuarios').addEventListener('click', loadConsultarQuizzUsuarios);
+
+
+
+
+
+
+
+
+
+
+
+
+
+const mainContentUsuariosBloqueados = document.getElementById('main-content');
+
+function listarUsuariosBloqueados() {
+  console.log('Cargando usuarios bloqueados...');
+
+  // Encabezado para la sección
+  mainContentUsuariosBloqueados.innerHTML = `
+    <h2>Consulta de Cuestionarios Bloqueados por Usuario</h2>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col"><input type="checkbox" id="select-all"></th>
+            <th scope="col">ID Usuario</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Apellido</th>
+            <th scope="col">ID Cuestionario</th>
+            <th scope="col">Titulo</th>
+            <th scope="col">Departamento</th>
+          </tr>
+        </thead>
+        <tbody id="usuarios-bloqueados-body"></tbody>
+      </table>
+    </div>
+    <button id="liberar-usuarios" class="btn btn-primary mt-3">Liberar Seleccionados</button>
+  `;
+
+  fetch('http://localhost:3000/api/admin/usuarios-bloqueados')
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Error al obtener usuarios bloqueados');
+      }
+      return response.json();
+    })
+    .then((data) => {
+      const usuariosBody = document.getElementById('usuarios-bloqueados-body');
+      usuariosBody.innerHTML = '';
+
+      data.forEach((usuario) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><input type="checkbox" class="usuario-checkbox" value="${usuario.usuario_id}|${usuario.IDCuestionario}"></td>
+          <td>${usuario.usuario_id}</td>
+          <td>${usuario.username}</td>
+          <td>${usuario.apellido}</td>
+          <td>${usuario.IDCuestionario}</td>
+          <td>${usuario.Titulo}</td>
+          <td>${usuario.descripcion}</td>
+        `;
+      
+        usuariosBody.appendChild(row);
+      });
+
+      // Manejo del checkbox "Seleccionar todo"
+      const selectAllCheckbox = document.getElementById('select-all');
+      selectAllCheckbox.addEventListener('change', (event) => {
+        const checkboxes = document.querySelectorAll('.usuario-checkbox');
+        checkboxes.forEach((checkbox) => {
+          checkbox.checked = event.target.checked;
+        });
+      });
+    })
+    .catch((error) => {
+      console.error('Error al cargar usuarios bloqueados:', error);
+    });
+
+  // Manejo del botón "Liberar seleccionados"
+ document.getElementById('liberar-usuarios').addEventListener('click', () => {
+  const selectedCheckboxes = document.querySelectorAll('.usuario-checkbox:checked');
+  
+  // Crear un array con objetos que incluyan usuario_id y IDCuestionario
+  const selectedData = Array.from(selectedCheckboxes).map((checkbox) => {
+    
+    const [usuario_id, IDCuestionario] = checkbox.value.split('|');
+    return { usuario_id, IDCuestionario };
+  });
+
+  if (selectedData.length === 0) {
+    alert('Por favor, seleccione al menos un usuario para liberar.');
+    return;
+  }
+
+  console.log(selectedData); // Verifica que los datos sean correctos
+
+  fetch('http://localhost:3000/api/admin/liberar-usuarios', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ usuarios: selectedData }),
+  })
+     
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Error al liberar usuarios');
+      }
+      return response.json();
+    })
+    .then((result) => {
+      alert(result.message || 'Usuarios liberados correctamente.');
+      listarUsuariosBloqueados(); // Recargar la tabla después de liberar
+    })
+    .catch((error) => {
+      console.error('Error al liberar usuarios:', error);
+    });
+});
+
+}
+
+document.querySelector('a.listarUsuariosBloqueados').addEventListener('click', listarUsuariosBloqueados);
 

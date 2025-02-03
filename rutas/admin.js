@@ -37,30 +37,9 @@ router.post('/save-quiz', (req, res) => {
 });
 
 
-router.post("/save-departamento-cuestionario", (req, res) => {
-  const { idCuestionario, departamentos, fecha_creacion, tiempolimite} = req.body;
 
-  if (!idCuestionario || !departamentos || departamentos.length === 0 || !fecha_creacion) {
-    return res.status(400).json({ success: false, message: "Datos incompletos" });
-  }
 
-  // Crear valores para la inserción masiva en la BD
-  const values = departamentos.map((dep) => [dep, idCuestionario, fecha_creacion,tiempolimite ]);
 
-  const query = `
-    INSERT INTO departamento_cuestionario (ID_departamento, ID_cuestionario, fecha_creacion, tiempo_limite) 
-    VALUES ?
-  `;
-
-  connection.query(query, [values], (err, result) => {
-    if (err) {
-      console.error("Error al asociar departamentos:", err);
-      return res.status(500).json({ success: false, message: "Error al guardar la asociación" });
-    }
-
-    res.json({ success: true, message: "Departamentos asociados correctamente", affectedRows: result.affectedRows });
-  });
-});
 
 
 
@@ -539,6 +518,68 @@ router.post('/enviar-correo', async (req, res) => {
   } catch (error) {
       res.status(500).json({ success: false, message: 'Error al enviar correo', error });
   }
+});
+
+
+// Ruta para obtener usuarios bloqueados
+router.get('/usuarios-bloqueados', (req, res) => {
+  const query = `
+    SELECT us.id as usuario_id, us.username, us.apellido, ac.IDCuestionario, ic.Titulo,ac.estado_cuestionario, ac.numero_intentos, dp.descripcion
+    FROM users as us
+    INNER JOIN asignaciones_cuestionarios as ac
+    ON ac.usuario_id = us.id
+    INNER JOIN departamento as dp
+    ON dp.ID = us.id_departamento
+    INNER JOIN idcuestionarios as ic
+    ON ic.IDCuestionario = ac.IDCuestionario
+    WHERE ac.numero_intentos >3;`;
+
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error al obtener usuarios bloqueados:', err);
+      return res.status(500).json({ error: 'Error al obtener usuarios bloqueados' });
+    }
+    res.json(results);
+  });
+});
+
+
+
+// Ruta para liberar un cuestionario
+router.post('/liberar-usuarios', (req, res) => {
+  const { usuarios } = req.body;
+
+  if (!usuarios || !Array.isArray(usuarios) || usuarios.length === 0) {
+    return res.status(400).json({ error: 'No se enviaron usuarios para liberar' });
+  }
+
+  const queries = usuarios.map(({ usuario_id, IDCuestionario }) => {
+    return new Promise((resolve, reject) => {
+      const query = `
+        UPDATE asignaciones_cuestionarios
+        SET estado_cuestionario = 'NULL', numero_intentos = 3
+        WHERE usuario_id = ? AND IDCuestionario = ?;
+      `;
+
+      connection.query(query, [usuario_id, IDCuestionario], (err) => {
+        if (err) {
+          console.error('Error al liberar cuestionario:', err);
+          return reject(err);
+        }
+        resolve();
+      });
+    });
+  });
+
+  // Ejecutar todas las consultas de forma concurrente
+  Promise.all(queries)
+    .then(() => {
+      res.json({ success: true, message: 'Cuestionarios liberados correctamente.' });
+    })
+    .catch((err) => {
+      console.error('Error al liberar cuestionarios:', err);
+      res.status(500).json({ error: 'Error al liberar cuestionarios.' });
+    });
 });
 
 
