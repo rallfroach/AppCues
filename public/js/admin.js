@@ -25,6 +25,7 @@ let tiempoLimiteGlobal = '';
 let departamentosSeleccionados = []; // Nueva variable global
 let contenido = '';
 let vigencia = '';
+let departamentosSeleccionadosID = [];
 
 
 
@@ -101,66 +102,84 @@ function loadForm1() {
   `;
 
   // Cargar los departamentos desde el backend
-  fetch('http://localhost:3000/api/admin/departamentos')
-    .then((response) => response.json())
-    .then((departamentos) => {
-      const departamentosContainer = document.getElementById('departamentos-container');
-      departamentos.forEach((dep) => {
-        console.log(`validar`,departamentos)
-        const checkbox = document.createElement('div');
-        checkbox.className = 'form-check';
-        checkbox.innerHTML = `
-          <input class="form-check-input" type="checkbox" id="dep-${dep.ID_departamento}" value="${dep.ID_departamento}">
-          <label class="form-check-label" for="dep-${dep.ID_departamento}">${dep.descripcion}</label>
-        `;
-        departamentosContainer.appendChild(checkbox);
-      });
-    })
-    .catch((error) => {
-      console.error('Error al cargar los departamentos:', error);
-    });
-
-
-  // Manejador para añadir departamentos seleccionados
-  document.getElementById('add-departments').addEventListener('click', () => {
+// Cargar los departamentos desde el backend
+// Cargar los departamentos desde el backend
+fetch('http://localhost:3000/api/admin/departamentos')
+  .then((response) => response.json())
+  .then((departamentos) => {
     const departamentosContainer = document.getElementById('departamentos-container');
-    const selectedDepartmentsContainer = document.getElementById('selected-departments');
-    const selectedDepartments = departamentosContainer.querySelectorAll('input[type="checkbox"]:checked');
-    
-    if (selectedDepartments.length === 0) {
-      alert('Por favor, seleccione al menos un departamento.');
-      return;
-    }
-    selectedDepartments.forEach((checkbox) => {
-      const descripcion = checkbox.nextElementSibling.textContent.trim();
-      const dataId = descripcion
-      if ([...selectedDepartmentsContainer.children].some((child) => child.dataset.id === dataId)) {
-        return; // Si ya existe, no lo añadimos
-      }
-  
-      // Crear etiqueta del departamento seleccionado
-      const departmentTag = document.createElement('div');
-      departmentTag.className = 'badge bg-primary text-white d-flex align-items-center me-2 mb-2';
-      departmentTag.dataset.id = dataId;
-      departmentTag.innerHTML = `
-        ${descripcion}
-        <button type="button" class="btn-close btn-close-white ms-2" aria-label="Cerrar"></button>
+    departamentos.forEach((dep) => {
+      const checkbox = document.createElement('div');
+      checkbox.className = 'form-check';
+      checkbox.innerHTML = `
+        <input class="form-check-input" type="checkbox" id="dep-${dep.ID}" value="${dep.ID}">
+        <label class="form-check-label" for="dep-${dep.ID}">${dep.descripcion}</label>
       `;
-  
-      // Evento para eliminar el departamento del contenedor
-      departmentTag.querySelector('.btn-close').addEventListener('click', () => {
-        departmentTag.remove();
-        const index = departamentosSeleccionados.indexOf(dataId);
-        if (index !== -1) {
-          departamentosSeleccionados.splice(index, 1);
-        }
-        console.log('Departamentos seleccionados tras eliminación:', departamentosSeleccionados);
-      });
-      selectedDepartmentsContainer.appendChild(departmentTag);
-      checkbox.checked = false;
-      departamentosSeleccionados.push(dataId);
+      departamentosContainer.appendChild(checkbox);
     });
+  })
+  .catch((error) => {
+    console.error('Error al cargar los departamentos:', error);
   });
+
+// Manejador para añadir departamentos seleccionados
+document.getElementById('add-departments').addEventListener('click', () => {
+  const departamentosContainer = document.getElementById('departamentos-container');
+  const selectedDepartmentsContainer = document.getElementById('selected-departments');
+  const selectedDepartments = departamentosContainer.querySelectorAll('input[type="checkbox"]:checked');
+
+  if (selectedDepartments.length === 0) {
+    alert('Por favor, seleccione al menos un departamento.');
+    return;
+  }
+
+  selectedDepartments.forEach((checkbox) => {
+    const descripcion = checkbox.nextElementSibling.textContent.trim(); // Obtiene la descripción del departamento
+    const dataId = checkbox.value; // Obtiene el ID del departamento
+
+    // Verifica si ya existe el departamento en la lista seleccionada
+    if ([...selectedDepartmentsContainer.children].some((child) => child.dataset.id === dataId)) {
+      return; // Si ya existe, no lo añadimos
+    }
+
+    // Crear etiqueta del departamento seleccionado
+    const departmentTag = document.createElement('div');
+    departmentTag.className = 'badge bg-primary text-white d-flex align-items-center me-2 mb-2';
+    departmentTag.dataset.id = dataId;
+    departmentTag.innerHTML = `
+      ${descripcion}
+      <button type="button" class="btn-close btn-close-white ms-2" aria-label="Cerrar"></button>
+    `;
+
+    // Evento para eliminar el departamento del contenedor
+    departmentTag.querySelector('.btn-close').addEventListener('click', () => {
+      departmentTag.remove();
+
+      const indexDescripcion = departamentosSeleccionados.indexOf(descripcion);
+      const indexID = departamentosSeleccionadosID.indexOf(dataId);
+
+      if (indexDescripcion !== -1) {
+        departamentosSeleccionados.splice(indexDescripcion, 1);
+      }
+
+      if (indexID !== -1) {
+        departamentosSeleccionadosID.splice(indexID, 1);
+      }
+
+      console.log('Departamentos seleccionados tras eliminación:', departamentosSeleccionados);
+      console.log('Departamentos seleccionados (ID) tras eliminación:', departamentosSeleccionadosID);
+    });
+
+    // Añade la etiqueta y actualiza las variables
+    selectedDepartmentsContainer.appendChild(departmentTag);
+    checkbox.checked = false;
+    departamentosSeleccionados.push(descripcion); // Agrega la descripción
+    departamentosSeleccionadosID.push(dataId); // Agrega el ID
+  });
+
+  console.log('Departamentos seleccionados:', departamentosSeleccionados);
+  console.log('Departamentos seleccionados (ID):', departamentosSeleccionadosID);
+});
 
 
 
@@ -175,7 +194,7 @@ function loadForm1() {
 
     if (!nombreCuestionario ) {
       Swal.fire({
-        title: "Nombre de Cuestionario",
+          title: "Nombre de Cuestionario",
         text: "Este valor no puede estar vacio",
         icon: "warning",
       });
@@ -221,7 +240,7 @@ function loadForm1() {
     }
 
 
-    if (!vigencia) {
+    if (!fvigencia) {
       Swal.fire({
         title: "Contenido de Cuestionario",
         text: "Este valor no puede estar vacio debe ser ",
@@ -517,6 +536,33 @@ function finalizeCuestionario() {
     .catch((error) => {
       console.error("Error al enviar el ID y título del cuestionario:", error);
     });
+  
+
+    fetch("http://localhost:3000/api/admin/save-departamento-cuestionario", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        idCuestionario: idQuizz,
+        departamentos: Array.from(departamentosSeleccionadosID),
+        fecha_creacion: new Date().toISOString().split("T")[0], 
+        tiempolimite: tiempoLimiteGlobal,
+      })
+    })
+    
+    .then(response => response.json())
+    .then(deptData => {
+      if (deptData.success) {
+        console.log('Validar departamento',deptData)
+        console.log("Departamentos asociados correctamente al cuestionario.");
+      } else {
+        console.error("Error al asociar departamentos:", deptData.message);
+      }
+    })
+    .catch(error => {
+      console.error("Error en la solicitud de departamentos:", error);
+    });
 
   // Guardar preguntas del cuestionario
   fetch("http://localhost:3000/api/admin/save-quiz", {
@@ -567,6 +613,7 @@ function finalizeCuestionario() {
   console.log(idQuizz);
   console.log(nombreTitulo);
 }
+
 
 document.querySelector('a.crearCuestionario').addEventListener('click', loadForm1);
 

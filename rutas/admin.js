@@ -14,6 +14,7 @@ router.post('/save-quiz', (req, res) => {
     return res.status(400).json({ success: false, message: 'No hay datos para guardar.' });
   }
 
+ 
   const insertQuery =
     'INSERT INTO cuestionarios (IDCuestionario, TituloPregunta, Opcion1, Opcion2, Opcion3, Opcion4, Valida) VALUES ?';
 
@@ -35,6 +36,31 @@ router.post('/save-quiz', (req, res) => {
   });
 });
 
+
+router.post("/save-departamento-cuestionario", (req, res) => {
+  const { idCuestionario, departamentos, fecha_creacion, tiempolimite} = req.body;
+
+  if (!idCuestionario || !departamentos || departamentos.length === 0 || !fecha_creacion) {
+    return res.status(400).json({ success: false, message: "Datos incompletos" });
+  }
+
+  // Crear valores para la inserción masiva en la BD
+  const values = departamentos.map((dep) => [dep, idCuestionario, fecha_creacion,tiempolimite ]);
+
+  const query = `
+    INSERT INTO departamento_cuestionario (ID_departamento, ID_cuestionario, fecha_creacion, tiempo_limite) 
+    VALUES ?
+  `;
+
+  connection.query(query, [values], (err, result) => {
+    if (err) {
+      console.error("Error al asociar departamentos:", err);
+      return res.status(500).json({ success: false, message: "Error al guardar la asociación" });
+    }
+
+    res.json({ success: true, message: "Departamentos asociados correctamente", affectedRows: result.affectedRows });
+  });
+});
 
 
 
@@ -72,6 +98,9 @@ router.post("/save-idcuestionario", upload.single("materialCuestionario"), (req,
     res.json({ success: true, message: "ID, título y material de apoyo guardados exitosamente.", results });
   });
 });
+
+
+
 
 
 
