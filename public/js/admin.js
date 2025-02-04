@@ -102,6 +102,7 @@ function loadForm1() {
   `;
 
 // Cargar los departamentos desde el backend
+// Cargar los departamentos desde el backend
 fetch('http://localhost:3000/api/admin/departamentos')
   .then((response) => response.json())
   .then((departamentos) => {
@@ -197,7 +198,7 @@ document.getElementById('add-departments').addEventListener('click', () => {
 
     if (!tiempoCuestionario || isNaN(tiempoCuestionario) || tiempoCuestionario <= 0) {
       Swal.fire({
-        title: "Tiempo (min) Vacio",
+        title: "Tiempo (min) vacio",
         text: "Este valor no puede estar vacio",
         icon: "warning",
       });
@@ -206,19 +207,9 @@ document.getElementById('add-departments').addEventListener('click', () => {
 
     if (!fvigencia) {
       Swal.fire({
-        title: "Contenido de Cuestionario",
+        title: "Fehca de vigencia vacio",
         text: "Este valor no puede estar vacio debe ser ",
         icon: "warning",
-      });
-      return;
-    }
-
-    if (!materialCuestionario) {
-      Swal.fire({
-        title: "Material de Apoyo (PDF no cargado",
-        text: "Este valor no puede estar vacio",
-        icon: "warning",
-        
       });
       return;
     }
@@ -229,6 +220,16 @@ document.getElementById('add-departments').addEventListener('click', () => {
         text: "Este valor no puede estar vacio, seleccione y añada al menos uno",
         icon: "warning",
        
+      });
+      return;
+    }
+
+    if (!materialCuestionario) {
+      Swal.fire({
+        title: "Material de Apoyo (PDF no cargado",
+        text: "Este valor no puede estar vacio",
+        icon: "warning",
+        
       });
       return;
     }
@@ -359,7 +360,6 @@ function addQuestionToList() {
   const opcion4 = document.getElementById('opcion4').value;
   const valida = document.querySelector('input[name="valida"]:checked');
 
-
   if (!tituloPregunta ) {
     Swal.fire({
       title: "Nombre de Pregunta vacio",
@@ -396,16 +396,23 @@ function addQuestionToList() {
     return;
   }
 
-  
-  
-  if (!tituloPregunta || !opcion1 || !opcion2 || !opcion3 || !opcion4 || !valida) {
-    alert('Por favor, complete todos los campos y seleccione una opción válida.');
+  if(!opcion4){
+    Swal.fire({
+      title: "Opcion4 vacio",
+      text: "Este valor no puede estar vacio",
+      icon: "warning",
+    });
     return;
   }
-
-
-
-
+  
+  if(!valida){
+    Swal.fire({
+      title: "Respuesta correcta  vacio",
+      text: "Este valor no puede estar vacio",
+      icon: "warning",
+    });
+    return;
+  }
 
   const questionListBody = document.getElementById('question-list-body');
 
@@ -425,6 +432,23 @@ function addQuestionToList() {
 
   questionListBody.appendChild(row);
   
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "bottom-start",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    }
+  });
+  Toast.fire({
+    icon: "success",
+    title: "Agregada correctamente"
+  });
+  
+  
   row.querySelector(".btn-delete").addEventListener("click", () => {
     row.remove();
   });
@@ -439,6 +463,9 @@ function addQuestionToList() {
   document.getElementById('opcion3').value = '';
   document.getElementById('opcion4').value = '';
   document.querySelector('input[name="valida"]:checked').checked = false;
+
+
+  
 }
 
 
@@ -582,6 +609,7 @@ function finalizeCuestionario() {
             if (assignData.success) {
               console.log("Cuestionario asignado correctamente a los usuarios.");
               alert("Cuestionario y asignaciones completadas exitosamente.");
+              
               departamentosSeleccionados = [];
               selectedDepartmentsContainer = '';
             } else {

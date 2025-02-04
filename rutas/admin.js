@@ -38,7 +38,31 @@ router.post('/save-quiz', (req, res) => {
 
 
 
+router.post('/save-departamento-cuestionario', (req, res) => {
+  const { idCuestionario, departamentos, fecha_vigencia, tiempolimite } = req.body;
 
+  if (!idCuestionario || !Array.isArray(departamentos) || departamentos.length === 0 || !fecha_vigencia || !tiempolimite) {
+    return res.status(400).json({ error: 'Datos incompletos. Se requiere idCuestionario, departamentos, fecha_vigencia y tiempolimite.' });
+  }
+
+  // Construimos las consultas SQL dinámicamente
+  const values = departamentos.map(dept => [dept, idCuestionario, fecha_vigencia, tiempolimite]);
+  const query = `
+    INSERT INTO departamento_cuestionario (ID_departamento, ID_cuestionario, fecha_creacion, tiempo_limite)
+    VALUES ?
+    ON DUPLICATE KEY UPDATE
+      fecha_creacion = VALUES(fecha_creacion),
+      tiempo_limite = VALUES(tiempo_limite);
+  `;
+
+  connection.query(query, [values], (err, results) => {
+    if (err) {
+      console.error('Error al guardar los departamentos asociados al cuestionario:', err);
+      return res.status(500).json({ error: 'Error en el servidor al guardar los departamentos.' });
+    }
+    res.json({ success: true, message: 'Departamentos asociados correctamente al cuestionario.' });
+  });
+});
 
 
 
