@@ -557,8 +557,8 @@ router.post('/liberar-usuarios', (req, res) => {
     return new Promise((resolve, reject) => {
       const query = `
         UPDATE asignaciones_cuestionarios
-        SET estado_cuestionario = 'NULL', numero_intentos = 3
-        WHERE usuario_id = ? AND IDCuestionario = ?;
+        SET estado_cuestionario = 'NULL', numero_intentos = 3, estado_resultados = 'NULL'
+        WHERE usuario_id = ? AND IDCuestionario = ? AND numero_intentos >3;
       `;
 
       connection.query(query, [usuario_id, IDCuestionario], (err) => {

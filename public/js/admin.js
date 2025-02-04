@@ -101,9 +101,6 @@ function loadForm1() {
     </div>
   `;
 
-  // Cargar los departamentos desde el backend
-// Cargar los departamentos desde el backend
-// Cargar los departamentos desde el backend
 // Cargar los departamentos desde el backend
 fetch('http://localhost:3000/api/admin/departamentos')
   .then((response) => response.json())
@@ -182,8 +179,6 @@ document.getElementById('add-departments').addEventListener('click', () => {
   console.log('Departamentos seleccionados (ID):', departamentosSeleccionadosID);
 });
 
-
-
   document.getElementById('next-step').addEventListener('click', () => {
     const nombreCuestionario = document.getElementById('nombreCuestionario').value.trim();
     const tiempoCuestionario = document.getElementById('tiempoCuestionario').value.trim();
@@ -191,8 +186,6 @@ document.getElementById('add-departments').addEventListener('click', () => {
     const contenidoCuestionario = document.getElementById('comentarios').value.trim();
     const fvigencia = document.getElementById('vigencia').value.trim();
     
-
-
     if (!nombreCuestionario ) {
       Swal.fire({
           title: "Nombre de Cuestionario",
@@ -206,6 +199,15 @@ document.getElementById('add-departments').addEventListener('click', () => {
       Swal.fire({
         title: "Tiempo (min) Vacio",
         text: "Este valor no puede estar vacio",
+        icon: "warning",
+      });
+      return;
+    }
+
+    if (!fvigencia) {
+      Swal.fire({
+        title: "Contenido de Cuestionario",
+        text: "Este valor no puede estar vacio debe ser ",
         icon: "warning",
       });
       return;
@@ -241,15 +243,7 @@ document.getElementById('add-departments').addEventListener('click', () => {
     }
 
 
-    if (!fvigencia) {
-      Swal.fire({
-        title: "Contenido de Cuestionario",
-        text: "Este valor no puede estar vacio debe ser ",
-        icon: "warning",
-      });
-      return;
-    }
-    // Guardar datos del cuestionario
+  
     idQuizz = generarIdCuestionario();
     tiempoLimiteGlobal = parseInt(tiempoCuestionario);
     nombreTitulo = nombreCuestionario;
@@ -257,15 +251,12 @@ document.getElementById('add-departments').addEventListener('click', () => {
     contenido = contenidoCuestionario;
     vigencia = fvigencia;
 
-
-
     console.log('ID generado para el cuestionario:', idQuizz);
     console.log('Nombre del cuestionario:', nombreCuestionario);
     console.log('Tiempo del cuestionario:', tiempoCuestionario);
     console.log('Departamentos seleccionados:', departamentosSeleccionados);
     console.log('Contenido curso:', contenido);
-    
-
+  
     loadForm2();
   });
 }
@@ -614,8 +605,6 @@ function finalizeCuestionario() {
   console.log(idQuizz);
   console.log(nombreTitulo);
 }
-
-
 document.querySelector('a.crearCuestionario').addEventListener('click', loadForm1);
 
 
@@ -703,7 +692,6 @@ function renderQuizModal(data) {
     </div>
   `;
 
-  
   document.body.insertAdjacentHTML('beforeend', modalHTML);
 
 
