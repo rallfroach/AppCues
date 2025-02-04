@@ -432,22 +432,7 @@ function addQuestionToList() {
 
   questionListBody.appendChild(row);
   
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "bottom-start",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.onmouseenter = Swal.stopTimer;
-      toast.onmouseleave = Swal.resumeTimer;
-    }
-  });
-  Toast.fire({
-    icon: "success",
-    title: "Agregada correctamente"
-  });
-  
+
   
   row.querySelector(".btn-delete").addEventListener("click", () => {
     row.remove();
