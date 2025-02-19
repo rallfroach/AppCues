@@ -410,7 +410,7 @@ router.post('/cuestionarios/:IDCuestionario/bloquear', (req, res) => {
 
 
 router.post('/generar-diploma', async (req, res) => {
-  const { nombreUsuario, dniUsuario, tituloCuestionario, duracion, fecha, contenido} = req.body;
+  const { nombreUsuario, dniUsuario, tituloCuestionario, duracion, fecha, contenido,IDCuestionario,fechaInicio, fechaFin} = req.body;
 
   try {
     const templatePath = path.join(__dirname, 'templates', 'diploma_template.html');
@@ -423,7 +423,10 @@ router.post('/generar-diploma', async (req, res) => {
       .replace('{{tituloCuestionario}}', tituloCuestionario)
       .replace('{{duracion}}', duracion)
       .replace('{{fecha}}', fecha)
-      .replace('{{contenido}}', contenido);
+      .replace('{{contenido}}', contenido)
+
+
+      
       
 
     const browser = await puppeteer.launch({
@@ -437,7 +440,7 @@ router.post('/generar-diploma', async (req, res) => {
     });
 
     // Generar PDF
-    const pdfPath = path.join('C:/MaterialPDF/Diplomas', `${nombreUsuario}-${tituloCuestionario}.pdf`);
+    const pdfPath = path.join('C:/MaterialPDF/Diplomas', `${nombreUsuario}-${tituloCuestionario}-${IDCuestionario}.pdf`);
     await page.pdf({
       path: pdfPath,
       format: 'A4',
@@ -451,7 +454,7 @@ router.post('/generar-diploma', async (req, res) => {
 
     res.json({
       success: true,
-      pdfUrl: `http://localhost:3000/pdf/${nombreUsuario}-${tituloCuestionario}.pdf`,
+      pdfUrl: `http://localhost:3000/pdf/${nombreUsuario}-${tituloCuestionario}-${IDCuestionario}.pdf`,
     });
   } catch (error) {
     console.error('Error al generar el diploma:', error);
@@ -469,20 +472,25 @@ router.get('/obtener-datos-diploma/:IDCuestionario/:usuarioId', (req, res) => {
   const { usuarioId, IDCuestionario } = req.params;
   console.log('Parámetros recibidos para el diploma:', { IDCuestionario, usuarioId });
   const query = `
-    SELECT 
+      SELECT 
       us.username, 
       us.apellido, 
       ac.estado_resultados, 
       id.IDCuestionario, 
       id.Titulo, 
       id.tiempo_limite,
-      id.Contenido
+      id.Contenido,
+      ac.fecha_asignacion,
+      ru.fecha_respuesta
     FROM 
       users as us
     INNER JOIN 
       asignaciones_cuestionarios as ac ON ac.usuario_id = us.id
     INNER JOIN 
       idcuestionarios as id ON id.IDCuestionario = ac.IDCuestionario
+    INNER JOIN 
+      (SELECT DISTINCT usuario_id, IDCuestionario, fecha_respuesta
+    FROM respuestas_usuarios) as ru ON ru.usuario_id = ac.usuario_id AND ru.IDCuestionario = id.IDCuestionario
     WHERE 
       us.id = ? AND id.IDCuestionario = ? AND ac.estado_resultados = 'Aprobado';
   `;

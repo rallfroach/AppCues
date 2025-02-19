@@ -570,8 +570,11 @@ function finalizarCuestionario(IDCuestionario, respuestas, usuarioId) {
                   tituloCuestionario: diplomaData.Titulo,
                   duracion: diplomaData.tiempo_limite, 
                   fecha: new Date().toLocaleDateString('es-ES'),
-                  contenido: diplomaData.Contenido
-                  /* IDCuestionario:IDCuestionario, */
+                  contenido: diplomaData.Contenido,
+                  IDCuestionario:diplomaData.IDCuestionario,
+                  fechaInicio:new Date(diplomaData.fecha_asignacion).toISOString().split("T")[0],
+                  fechaFin:new Date(diplomaData.fecha_respuesta).toISOString().split("T")[0]
+                  
                 });
 
               } else {
@@ -602,7 +605,7 @@ function finalizarCuestionario(IDCuestionario, respuestas, usuarioId) {
             .then(() => {
               console.log('Estado y número de intentos actualizados correctamente');
               setTimeout(() => {
-                location.reload();
+               /*  location.reload(); */
               }, 1500); 
             })
         }
@@ -618,18 +621,18 @@ function finalizarCuestionario(IDCuestionario, respuestas, usuarioId) {
     });
 }
 
-function generarDiploma({ nombreUsuario, dniUsuario, tituloCuestionario, duracion,fecha, contenido }) {
+function generarDiploma({ nombreUsuario, dniUsuario, tituloCuestionario, duracion,fecha, contenido,IDCuestionario, fechaInicio, fechaFin }) {
   fetch('http://localhost:3000/api/usuario/generar-diploma', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nombreUsuario, dniUsuario, tituloCuestionario, duracion,fecha , contenido }),
+    body: JSON.stringify({ nombreUsuario, dniUsuario, tituloCuestionario, duracion,fecha , contenido,IDCuestionario,fechaInicio, fechaFin }),
   })
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
         
         window.open(data.pdfUrl, '_blank'); 
-        location.reload();
+        /* location.reload(); */
       } else {
         alert('Error al generar el diploma.');
       }
