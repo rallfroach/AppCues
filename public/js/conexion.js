@@ -18,6 +18,6 @@ connection.connect((err) => {
 
 module.exports = connection;
 
-
+/* validacion de conexion */
 
 
