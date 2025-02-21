@@ -428,6 +428,7 @@ router.post('/generar-diploma', async (req, res) => {
       .replace('{{contenido}}', contenido)
       .replace('{{finicio}}', fechaInicio)
       .replace('{{ffin}}', fechaFin)
+
       
 
       
