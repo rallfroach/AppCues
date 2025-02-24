@@ -145,34 +145,49 @@ function mostrarCuestionario(IDCuestionario, Titulo) {
   // Verificar si ya se está en el cuestionario actual
   if (cuestionarioEnCurso === IDCuestionario) {
     console.log('Ya estás en este curso. Continuando...');
-    alert('Ya estás en este cuestionario. Por favor, continúa con él.');
+    Swal.fire("¡Cuestionario en curso, Por favor continua con el!");;
     return; // Salimos de la función
   }
 
-  // Verificar si hay otro cuestionario en curso
   if (cuestionarioEnCurso && cuestionarioEnCurso !== IDCuestionario) {
-    const confirmacion = confirm('No has terminado el cuestionario actual. ¿Quieres continuar con este cuestionario?');
-    if (!confirmacion) {
-      console.log('Cancelar seleccionado. Guardando tiempo restante...');
-      guardarTiempoRestante(cuestionarioEnCurso, tiempoRestanteActual)
-        .then(() => {
-          console.log('Tiempo restante guardado. Refrescando la página.');
-          eliminarCronometro();
-          cuestionarioEnCurso = null;
-          tiempoRestanteActual = 0;
-          location.reload(); // Refrescar la pantalla solo después de guardar
-        })
-        .catch((error) => {
-          console.error('Error al guardar el tiempo restante:', error);
-          alert('No se pudo guardar el tiempo restante. Intenta nuevamente.');
-        });
-      return;
-    } else {
-      // El usuario selecciona "Seguir" (mantener el cuestionario actual activo)
-      console.log('Seguir seleccionado. Continuando con el cuestionario actual.');
-      return; // Salimos de la función sin cambiar el cuestionario
-    }
+    Swal.fire({
+      title: 'No has terminado el cuestionario actual',
+      text: '¿Quieres continuar con este cuestionario o guardar el tiempo restante?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Continuar con este cuestionario',
+      cancelButtonText: 'Guardar y cambiar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // El usuario elige continuar con el cuestionario actual
+        console.log('Seguir seleccionado. Continuando con el cuestionario actual.');
+      } else {
+        // El usuario elige guardar y cambiar de cuestionario
+        console.log('Cancelar seleccionado. Guardando tiempo restante...');
+        guardarTiempoRestante(cuestionarioEnCurso, tiempoRestanteActual)
+          .then(() => {
+            console.log('Tiempo restante guardado. Refrescando la página.');
+            eliminarCronometro();
+            cuestionarioEnCurso = null;
+            tiempoRestanteActual = 0;
+            location.reload(); // Refrescar la pantalla solo después de guardar
+          })
+          .catch((error) => {
+            console.error('Error al guardar el tiempo restante:', error);
+            Swal.fire({
+              title: 'Error',
+              text: 'No se pudo guardar el tiempo restante. Intenta nuevamente.',
+              icon: 'error',
+            });
+          });
+      }
+    });
+  
+    return; // Evita que el código continúe mientras el usuario decide
   }
+  
 
   // Actualizar el cuestionario en curso
   /* cuestionarioEnCurso = IDCuestionario; */
@@ -605,7 +620,7 @@ function finalizarCuestionario(IDCuestionario, respuestas, usuarioId) {
             .then(() => {
               console.log('Estado y número de intentos actualizados correctamente');
               setTimeout(() => {
-               /*  location.reload(); */
+                location.reload();
               }, 1500); 
             })
         }
@@ -632,7 +647,7 @@ function generarDiploma({ nombreUsuario, dniUsuario, tituloCuestionario, duracio
       if (data.success) {
         
         window.open(data.pdfUrl, '_blank'); 
-        /* location.reload(); */
+        location.reload();
       } else {
         alert('Error al generar el diploma.');
       }
