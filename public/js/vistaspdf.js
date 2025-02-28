@@ -543,8 +543,6 @@ function finalizarCuestionario(IDCuestionario, respuestas, usuarioId) {
         if (estado === 'Aprobado') {
           guardarTiempoRestante(IDCuestionario, tiempoRestante);
 
-         
-          
           fetch(intentosUrl, {
             method: 'POST',
             headers: {
