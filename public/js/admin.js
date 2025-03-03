@@ -1441,7 +1441,7 @@ document.querySelector('a.CrearUsuarios').addEventListener('click', loadCreateUs
 
 
 
-/* Listar usuarios Aprobados */
+/* Listar usuarios Aptos */
 
 const mainListarCuestionariosUsuarios = document.getElementById('main-content');
 

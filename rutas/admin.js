@@ -420,8 +420,8 @@ router.get('/get-quiz-results/:userId', (req, res) => {
         (COUNT(CASE WHEN r.opcion_seleccionada = q.Valida THEN 1 END) / COUNT(*)) * 100 AS porcentaje_correcto,
         CASE 
             WHEN (COUNT(CASE WHEN r.opcion_seleccionada = q.Valida THEN 1 END) / COUNT(*)) * 100 >= 70 
-            THEN 'Aprobado' 
-            ELSE 'Reprobado' 
+            THEN 'Apto' 
+            ELSE 'No Apto' 
         END AS estado
     FROM 
         respuestas_usuarios r

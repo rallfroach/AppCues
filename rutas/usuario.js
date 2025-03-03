@@ -16,7 +16,7 @@ router.get('/cuestionarios/:usuario_id', (req, res) => {
     WHERE A.usuario_id = ? AND (
       A.estado_cuestionario IS NULL 
       OR A.estado_cuestionario != 'COMPLETADO'
-      OR (A.estado_cuestionario = 'COMPLETADO' AND A.estado_resultados = 'Reprobado' )
+      OR (A.estado_cuestionario = 'COMPLETADO' AND A.estado_resultados = 'No Apto' )
     )
   `;
 
@@ -504,7 +504,7 @@ router.get('/obtener-datos-diploma/:IDCuestionario/:usuarioId', (req, res) => {
       (SELECT DISTINCT usuario_id, IDCuestionario, fecha_respuesta
     FROM respuestas_usuarios) as ru ON ru.usuario_id = ac.usuario_id AND ru.IDCuestionario = id.IDCuestionario
     WHERE 
-      us.id = ? AND id.IDCuestionario = ? AND ac.estado_resultados = 'Aprobado';
+      us.id = ? AND id.IDCuestionario = ? AND ac.estado_resultados = 'Apto';
   `;
   console.log('Ejecutando consulta SQL con parámetros:', [usuarioId, IDCuestionario]);
   connection.query(query, [usuarioId, IDCuestionario], (err, results) => { 

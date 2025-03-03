@@ -424,8 +424,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const li = document.createElement('li');
         li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
 
-        const estado = cuestionario.estado_cuestionario === 'COMPLETADO' && cuestionario.estado_resultados === 'Reprobado'
-          ? `<span class="text-danger">(Reprobado)</span>`
+        const estado = cuestionario.estado_cuestionario === 'COMPLETADO' && cuestionario.estado_resultados === 'No Apto'
+          ? `<span class="text-danger">(No Apto)</span>`
           : '';
 
         if (cuestionario.numero_intentos > 3) {
@@ -529,7 +529,7 @@ function finalizarCuestionario(IDCuestionario, respuestas, usuarioId) {
             <p>Gracias por participar.</p>
             <p>Tu resultado: ${porcentaje_correcto.toFixed(2)}%
               <div class="estatus_quizz">
-                <h1 class="${estado === 'Aprobado' ? 'text-success' : 'text-danger'}">${estado}</h1>
+                <h1 class="${estado === 'Apto' ? 'text-success' : 'text-danger'}">${estado}</h1>
               </div>
               
             </p>
@@ -539,8 +539,8 @@ function finalizarCuestionario(IDCuestionario, respuestas, usuarioId) {
         const mainContentUsers = document.getElementById('main-contentUsers');
         mainContentUsers.innerHTML = mensajeHTML;
 
-        // Generar diploma si el cuestionario está aprobado
-        if (estado === 'Aprobado') {
+        // Generar diploma si el cuestionario está Apto
+        if (estado === 'Apto') {
           guardarTiempoRestante(IDCuestionario, tiempoRestante);
 
           fetch(intentosUrl, {
@@ -598,7 +598,7 @@ function finalizarCuestionario(IDCuestionario, respuestas, usuarioId) {
               console.error('Error en el proceso de generación del diploma o actualización:', error);
             });
         }else{
-          //Actualiza estado e intentos si es aprobado
+          //Actualiza estado e intentos si es Apto
           fetch(intentosUrl, {
             method: 'POST',
             headers: {
